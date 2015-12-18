@@ -4,6 +4,11 @@ A little HTTP caching layer over Stripe's API.
 
 See more: https://paper.dropbox.com/doc/Stripe-Caching-Proxy-hT4QlXjEZzQWsPRLAK02b
 
+### Running
+
+0. `export DATABASE_URL=<db_url>` (See http://sequel.jeremyevans.net/rdoc/files/doc/opening_databases_rdoc.html for url formatting)
+0. `rake db:migrate`
+
 ### Tests
 
 `./spec/` has some unit and integration level tests.  The integration tests are

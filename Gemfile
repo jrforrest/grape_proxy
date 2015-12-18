@@ -1,6 +1,9 @@
 source 'https://rubygems.org'
 
 gem 'rack'
+gem 'rake'
+gem 'sequel'
+gem 'pg'
 
 group :development do
   gem 'rspec'
