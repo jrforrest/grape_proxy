@@ -22,18 +22,25 @@ module StripeCache
 
     def stripe_response
       @stripe_response ||= if(method == :get)
-        cache.get(request) || request_upstream
+        cache.get(request) || request_upstream_get
       else
-        request_upstream
+        request_upstream_post
       end
     end
 
-    def request_upstream
-      http.send(
-        method,
+    def request_upstream_get
+      http.get(
         'https://api.stripe.com/' + request.path,
         Authorization: request.headers['Authorization'],
         params: request.params)
+    end
+
+    def request_upstream_post
+      http.send(
+        method,
+        'https://api.stripe.com/' + request.path,
+        request.params,
+        {Authorization: request.headers['Authorization']})
     end
 
     def method

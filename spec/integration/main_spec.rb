@@ -33,10 +33,15 @@ describe 'Stripe proxy' do
   end
 
   it 'works for post requests' do
-    Stripe::Charge.create(
-      amount: 400,
-      currency: :usd,
-        source: 'tok_17JB6O2eZvKYlo2CekrJeU2Y',
+    begin
+      Stripe::Transfer.create(
+        amount: 400,
+        currency: :usd,
+        destination: 'acct_1032D82eZvKYlodC',
         description: 'truck stop services')
+    rescue Stripe::InvalidRequestError => e
+      json = JSON.parse(e.http_body)
+      expect(json['error']['type']).to eql('invalid_request_error')
+    end
   end
 end
