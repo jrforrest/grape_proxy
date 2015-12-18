@@ -1,3 +1,7 @@
+require 'stripe_cache/request_headers'
+
+using StripeCache::RequestHeaders
+
 module StripeCache
   class Cache
     def initialize

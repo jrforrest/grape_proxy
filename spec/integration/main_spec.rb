@@ -5,19 +5,31 @@ require 'rack'
 
 describe 'Stripe proxy' do
   before(:all) do
+    @app = StripeCache::Api.new
+
+    Thread.abort_on_exception = true
+
     Thread.new do
-      Rack::Handler::Webrick.run(StripeCache::Api, port: '9393')
+      Rack::Handler::WEBrick.run(@app, {Port: 9393})
     end
 
-    Kernel.sleep(1)
+    Kernel.sleep(3)
 
-    Stripe.connect_base = 'localhost:9393'
+    Stripe.api_base = 'localhost:9393'
     Stripe.api_key = 'sk_test_BQokikJOvBiI2HlWgH4olfQ2'
   end
 
   it 'hits the stripe API' do
     res = Stripe::Balance.retrieve()
     expect(res.available).not_to be_nil
+  end
+
+  it 'caches a request if its made twice' do
+    first = Stripe::Balance.retrieve()
+    second = Stripe::Balance.retrieve()
+
+    skip #TODO: test timestamp or something between the two to
+         #      make sure they are using the same cache entry
   end
 
   it 'works for post requests' do
