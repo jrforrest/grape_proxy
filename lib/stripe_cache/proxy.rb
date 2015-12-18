@@ -22,7 +22,7 @@ module StripeCache
 
     def stripe_response
       @stripe_response ||= if(method == :get)
-        cache.get(request) || request_upstream_get
+        cache.get(request) || cache.set(request, request_upstream_get)
       else
         request_upstream_post
       end

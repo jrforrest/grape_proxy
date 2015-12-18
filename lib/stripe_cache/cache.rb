@@ -12,6 +12,14 @@ module StripeCache
       @entries[key(request)]
     end
 
+    def set(request, response)
+      @entries[key(request)] = response
+    end
+
+    def num_entries
+      @entries.keys.length
+    end
+
     private
 
     def key(request)

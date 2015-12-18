@@ -19,6 +19,9 @@ describe 'Stripe proxy' do
     Stripe.api_key = 'sk_test_BQokikJOvBiI2HlWgH4olfQ2'
   end
 
+  let(:cache) { @app.cache }
+  let(:http) { @app.http }
+
   it 'hits the stripe API' do
     res = Stripe::Balance.retrieve()
     expect(res.available).not_to be_nil
@@ -26,10 +29,11 @@ describe 'Stripe proxy' do
 
   it 'caches a request if its made twice' do
     first = Stripe::Balance.retrieve()
+    expect(cache.num_entries).to eql(1)
+    expect(http).not_to receive(:get)
     second = Stripe::Balance.retrieve()
 
-    skip #TODO: test timestamp or something between the two to
-         #      make sure they are using the same cache entry
+    expect(first.to_hash).to eql(second.to_hash)
   end
 
   it 'works for post requests' do

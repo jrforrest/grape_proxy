@@ -15,7 +15,10 @@ module StripeCache
     end
 
     let(:cache) do
-      double.tap { |dbl| allow(dbl).to receive(:get) }
+      double.tap do |dbl|
+        allow(dbl).to receive(:get)
+        allow(dbl).to receive(:set).and_return(response)
+      end
     end
 
     let(:response) do
