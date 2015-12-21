@@ -1,0 +1,5 @@
+1. main_spec.rb:25-37 is gross
+2. Race condition between Cache#get->Cache#set needs transaction
+3. Lots of repeated logic in main_spec
+4. Expectations on sends in main_spec fail on server thread which results in
+   spec failure messages not propogating to reporter.

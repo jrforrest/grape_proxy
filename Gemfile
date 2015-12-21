@@ -11,4 +11,6 @@ group :development do
   gem 'rubocop'
   # For testing client compatability with API
   gem 'stripe'
+
+  gem 'timecop' # Timestamp faking in tests
 end

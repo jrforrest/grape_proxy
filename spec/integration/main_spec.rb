@@ -2,23 +2,9 @@ require 'spec_helper'
 require 'stripe_cache/api'
 require 'stripe'
 require 'rack'
+require 'timecop'
 
-describe 'Stripe proxy' do
-  before(:all) do
-    @app = StripeCache::Api.new
-
-    Thread.abort_on_exception = true
-
-    Thread.new do
-      Rack::Handler::WEBrick.run(@app, {Port: 9393})
-    end
-
-    Kernel.sleep(3)
-
-    Stripe.api_base = 'localhost:9393'
-    Stripe.api_key = 'sk_test_BQokikJOvBiI2HlWgH4olfQ2'
-  end
-
+describe 'Stripe proxy', type: :integration do
   let(:cache) { @app.cache }
   let(:http) { @app.http }
 
@@ -36,6 +22,20 @@ describe 'Stripe proxy' do
     expect(first.to_hash).to eql(second.to_hash)
   end
 
+  it 'skips the cache if the old entry is older than 10 mins' do
+    first = Stripe::Balance.retrieve()
+    second = nil
+    eleventy_one_minutes_from_now do
+      expect(cache.num_entries).to eql(1)
+      expect(http).to receive(:get).and_return(
+        Struct.new(:status, :body, :headers).new(200, first.to_json, {})
+      )
+      second = Stripe::Balance.retrieve()
+    end
+
+    expect(first.to_hash).to eql(second.to_hash)
+  end
+
   it 'works for post requests' do
     begin
       Stripe::Transfer.create(
@@ -47,5 +47,11 @@ describe 'Stripe proxy' do
       json = JSON.parse(e.http_body)
       expect(json['error']['type']).to eql('invalid_request_error')
     end
+  end
+
+  def eleventy_one_minutes_from_now
+    Timecop.freeze(Time.now + 111 * 60)
+    yield
+    Timecop.return
   end
 end

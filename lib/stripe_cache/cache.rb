@@ -34,6 +34,10 @@ module StripeCache
       table.count
     end
 
+    def clear
+      table.delete
+    end
+
     private
 
     # Clears expired entries for the given request
@@ -79,6 +83,10 @@ module StripeCache
 
     def set(request, response)
       @entries[key(request)] = response
+    end
+
+    def clear
+      @entries = Hash.new
     end
 
     def num_entries
