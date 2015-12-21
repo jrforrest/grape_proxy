@@ -29,7 +29,7 @@ module StripeCache
     end
 
     def request_upstream_get
-      http.get(
+      @upstream_get ||= http.get(
         'https://api.stripe.com/' + request.path,
         Authorization: request.headers['Authorization'],
         params: request.params)
