@@ -5,6 +5,7 @@ ruby "2.2.1"
 gem 'rack'
 gem 'rake'
 gem 'sequel'
+gem 'rest-client'
 gem 'pg'
 
 group :development do

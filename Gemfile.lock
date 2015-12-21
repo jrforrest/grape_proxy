@@ -67,6 +67,7 @@ DEPENDENCIES
   pry
   rack
   rake
+  rest-client
   rspec
   rubocop
   sequel
