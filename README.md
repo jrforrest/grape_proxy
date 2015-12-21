@@ -2,7 +2,6 @@
 
 A little HTTP caching layer over Stripe's API.
 
-See more: https://paper.dropbox.com/doc/Stripe-Caching-Proxy-hT4QlXjEZzQWsPRLAK02b
 
 ### Running
 
@@ -10,6 +9,7 @@ See more: https://paper.dropbox.com/doc/Stripe-Caching-Proxy-hT4QlXjEZzQWsPRLAK0
    http://sequel.jeremyevans.net/rdoc/files/doc/opening_databases_rdoc.html
    for url formatting)
 0. `rake db:migrate`
+0. `rackup config.ru`
 
 ##### Env Vars
 
