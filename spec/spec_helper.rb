@@ -11,10 +11,11 @@ RSpec.configure do |config|
     Thread.abort_on_exception = true
 
     Thread.new do
-      Rack::Handler::WEBrick.run(@app, {Port: 9393})
+      port = ENV['TEST_PORT'] || 9393
+      Rack::Handler::WEBrick.run(@app, {Port: port})
     end
 
-    Kernel.sleep(3)
+    Kernel.sleep(1)
 
     Stripe.api_base = 'localhost:9393'
     Stripe.api_key = 'sk_test_BQokikJOvBiI2HlWgH4olfQ2'

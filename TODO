@@ -1,5 +1,12 @@
 1. main_spec.rb:25-37 is gross
-2. Race condition between Cache#get->Cache#set needs transaction
+2. Race condition between Cache#get->Cache#set with DbCache needs transaction
 3. Lots of repeated logic in main_spec
 4. Expectations on sends in main_spec fail on server thread which results in
    spec failure messages not propogating to reporter.
+5. Kernel.sleep is used to wait on the testing server to start on spec runs.
+   there's got to be a better way of blocking on that (maybe flip a semaphore
+   in config.ru?)
+6. Re-entrant usage of Proxy's http and cache objects from specs for
+   assertions on cache size and http message receives and such is pretty
+   ugly and possibly prone to synchronization issues.  Async observers
+   would probably be a cleaner approach.
