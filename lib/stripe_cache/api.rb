@@ -8,7 +8,7 @@ module StripeCache
   class Api
     attr_reader :cache, :http
     def initialize
-      @cache = DbCache.new
+      @cache = (ENV['CACHE_TYPE'] == 'mem') ? MemoryCache.new : DbCache.new
       @http = HttpClient.new
     end
 

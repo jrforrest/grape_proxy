@@ -74,6 +74,7 @@ module StripeCache
 
   class MemoryCache
     def initialize
+      warn 'StripeCache::MemoryCache does not support TTL!'
       @entries = Hash.new
     end
 
