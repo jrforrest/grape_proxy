@@ -6,17 +6,13 @@ using StripeCache::RequestHeaders
 
 module StripeCache
   class DbCache
-    def initialize
-    end
-
     Request = Struct.new(:status, :body, :headers)
 
     def get(request)
-      upstream_request = table.filter(
-        path: request.path,
-        params_hash: params_hash(request),
-        auth: request.headers['Authorization']
-      ).first
+      clear_expired(request)
+      upstream_request = entries_for(request)
+        .where {|t| t.created_at > Time.now - ttl }
+        .first
 
       if upstream_request
         Request.new(200, upstream_request[:response_body], {})
@@ -29,6 +25,7 @@ module StripeCache
         path: request.path,
         auth: request.headers['Authorization'],
         params_hash: params_hash(request),
+        created_at: Time.now,
         response_body: response.body)
       response
     end
@@ -38,6 +35,26 @@ module StripeCache
     end
 
     private
+
+    # Clears expired entries for the given request
+    def clear_expired(request)
+      entries_for(request)
+        .where {|t| t.created_at < Time.now - ttl }
+        .delete
+    end
+
+    def entries_for(request)
+      table.filter(
+        path: request.path,
+        params_hash: params_hash(request),
+        auth: request.headers['Authorization']
+      )
+    end
+
+    def ttl
+      ENV['TTL_SECS'] || 60 * 10
+    end
+
     def connection
       @connection ||= Sequel.connect(ENV.fetch('DATABASE_URL'))
     end
